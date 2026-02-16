@@ -1,7 +1,11 @@
-import Mathlib
+module
 
-import Ainfinity.Grading
-import Ainfinity.HomogeneousChain
+public import Mathlib
+
+public import Ainfinity.Grading
+public import Ainfinity.HomogeneousChain
+
+@[expose] public section
 
 /- open ChainComplex CategoryTheory DirectSum GradedMonoid GradedObject -/
 

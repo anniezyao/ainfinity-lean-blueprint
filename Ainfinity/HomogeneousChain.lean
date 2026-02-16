@@ -1,5 +1,9 @@
-import Mathlib
-import Ainfinity.Grading
+module
+
+public import Mathlib
+public import Ainfinity.Grading
+
+@[expose] public section
 
 namespace AInfinityCategoryTheory
 
