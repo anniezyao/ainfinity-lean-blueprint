@@ -18,4 +18,5 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
-      - uses: leanprover-community/docgen-action@v1
+      # We are disabling this for now, since it seems to regenerate docs for all of Mathlib, which takes too long.
+      # - uses: leanprover-community/docgen-action@v1
