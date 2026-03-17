@@ -31,7 +31,7 @@ Marco: 3+4
 
 
 -- Its type is Type (max u v (w+1))
-class AInfinityCategoryStruct.{u, v, w} (β : Type u) [GradingCore β] (obj : Type v) extends GQuiver.{u, v, w} β obj where
+class AInfinityCategoryStruct.{u, v, w} (β : Type u) [Grading β] (obj : Type v) extends GQuiver.{u, v, w} β obj where
   /-- All possible compositions of chains of morphisms. -/
   mu {X Y : obj} (chain : HomogeneousChain X Y): (toGQuiver.data X Y) (correct_output_deg chain)
 
@@ -54,21 +54,21 @@ Use only as much structure as your use case requires.
 -/
 
 @[pp_with_univ, stacks 0014]
-class AInfinityPreadditive.{u,v,w} (β : Type u) [GradingCore β] (obj : Type v) extends AInfinityCategoryStruct.{u,v,w} β obj where
+class AInfinityPreadditive.{u,v,w} (β : Type u) [Grading β] (obj : Type v) extends AInfinityCategoryStruct.{u,v,w} β obj where
   hom_is_monoid: ∀ (X Y : obj) (b : β), AddCommMonoid ((toGQuiver.data X Y) b)
 
 def addcommmonoid_to_zero {G : Type u} (s : AddCommMonoid G) : Zero.{u} G where
   zero := (0 : G)
 
 @[simp]
-def toInhomQuiver {β : Type u} [GradingCore β] {obj : Type v} (C : AInfinityPreadditive.{u, v, w} β obj) : Quiver obj where
+def toInhomQuiver {β : Type u} [Grading β] {obj : Type v} (C : AInfinityPreadditive.{u, v, w} β obj) : Quiver obj where
   Hom X Y := @DFinsupp β (C.data X Y) (fun i ↦ addcommmonoid_to_zero (C.hom_is_monoid X Y i))
 
-abbrev InhomogeneousChain.{u, v, w} {β : Type u} [GradingCore β] {obj : Type v} {C : AInfinityPreadditive.{u, v, w} β obj} (X : obj) (Y : obj) :=
+abbrev InhomogeneousChain.{u, v, w} {β : Type u} [Grading β] {obj : Type v} {C : AInfinityPreadditive.{u, v, w} β obj} (X : obj) (Y : obj) :=
   @Quiver.Path obj (toInhomQuiver C) X Y
 
 -- Convenience: the inhomogeneous Hom type at (X,Y)
-abbrev InHom {β : Type u} [GradingCore β] {obj : Type v}
+abbrev InHom {β : Type u} [Grading β] {obj : Type v}
   (C : AInfinityPreadditive.{u,v,w} β obj) (X Y : obj) : Type _ :=
   (toInhomQuiver C).Hom X Y
 
@@ -97,7 +97,7 @@ procedure:
   * once those are filled, the “aux2/aux3/refine” scaffolding can
     likely be inlined into a single `exact e.sum (γ := …) …`.
 -/
-def expand {β : Type u} [GradingCore β]
+def expand {β : Type u} [Grading β]
   {obj : Type v} (C : AInfinityPreadditive.{u,v,w} β obj)
   {X Y Z: obj}
   (acc : HomogeneousChain (gquiver := C.toGQuiver) Y Z)
@@ -140,7 +140,7 @@ input: (v_k, …, v_1).
 output: μ(v_k, …, v_1).
 -/
 def mu_on_inhomogeneous_chain
-  {β : Type u} [GradingCore β]
+  {β : Type u} [Grading β]
   {obj : Type v} (C : AInfinityPreadditive.{u,v,w} β obj)
   {X Y : obj}
   (chain : InhomogeneousChain (C := C) X Y) :
@@ -150,7 +150,7 @@ def mu_on_inhomogeneous_chain
 
 
 
-
+/-
 @[pp_with_univ, stacks 0014]
 class AInfinityLinear.{u,v,w,x} (β : Type u) [GradingCore β] (obj : Type v) (R : Type x) [Semiring R] extends AInfinityPreadditive.{u,v,w} β obj where
   hom_is_module : ∀ (X Y : obj) (b : β), Module R ((toGQuiver.data X Y) b)
@@ -164,7 +164,7 @@ class AInfinityLinear.{u,v,w,x} (β : Type u) [GradingCore β] (obj : Type v) (R
     (index : ℕ) →
     let X_i :=
     let Y_i :=
-    (alternative : toGQuiver )
+    (alternative : toGQuiver)-/
 
 /- A category is called `R`-linear if `P ⟶ Q` is an `R`-module such that composition is
     `R`-linear in both variables. -/
@@ -214,3 +214,5 @@ class AInfinityLinear (K : Type u) [Field K]
     aesop_cat
 
 -/
+
+end AInfinityCategoryTheory

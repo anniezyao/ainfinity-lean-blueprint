@@ -8,12 +8,7 @@ noncomputable section
 namespace AInfinityAlgebraTheory
 
 universe u v
-variable {β : Type v} [GradingCore β] [AddCommGroup β]
-
-def shiftOfInt (n : ℤ) : β :=
-  Has_Int_or_Parity.deg_cast
-    (β := β)
-    (nat_to_correct_type (Has_Int_or_Parity.kind (β := β)) n)
+variable {β : Type v} [Grading β] [AddCommGroup β]
 
 abbrev GradedRModule (R : Type u) [CommRing R] :=
   GradedObject β (ModuleCat.{u} R)
@@ -25,7 +20,7 @@ structure AInfinityAlgebraData (R : Type u) [CommRing R] where
     (n : ℕ) →
     (deg : Fin n → β) →
     MultilinearMap R (fun i => A (deg i))
-      (A ((∑ i, deg i) + shiftOfInt (β := β) (2 - (n : ℤ))))
+      (A ((∑ i, deg i) + shift_ofInt (2 - (n : ℤ))))
 
 namespace AInfinityAlgebraData
 
@@ -35,14 +30,14 @@ abbrev validStasheffIndices (n r s : ℕ) : Prop :=
   1 ≤ s ∧ r + s ≤ n
 
 def stasheffTerm
-  (X : AInfinityAlgebraData (β := β) R)
+  (X : AInfinityAlgebraData R)
   (n : ℕ)
   (deg : Fin n → β)
   (x : ∀ i, X.A (deg i))
   (r s : ℕ)
   (hs : 1 ≤ s)
   (hr : r + s ≤ n) :
-  X.A ((∑ i, deg i) + shiftOfInt (β := β) (3 - (n : ℤ))) :=
+  X.A ((∑ i, deg i) + shift_ofInt (3 - (n : ℤ))) :=
 by
   /-
   This is the place where the real implementation goes.
@@ -72,7 +67,7 @@ def stasheffSummand
   (deg : Fin n → β)
   (x : ∀ i, X.A (deg i))
   (r s : ℕ) :
-  X.A ((∑ i, deg i) + shiftOfInt (β := β) (3 - (n : ℤ))) :=
+  X.A ((∑ i, deg i) + shift_ofInt (3 - (n : ℤ))) :=
   if h : validStasheffIndices n r s then
     X.stasheffTerm n deg x r s h.1 h.2
   else
@@ -84,7 +79,7 @@ def stasheffSum
   (n : ℕ)
   (deg : Fin n → β)
   (x : ∀ i, X.A (deg i)) :
-  X.A ((∑ i, deg i) + shiftOfInt (β := β) (3 - (n : ℤ))) :=
+  X.A ((∑ i, deg i) + shift_ofInt (3 - (n : ℤ))) :=
   ∑ r ∈ Finset.range (n + 1),
     ∑ s ∈ Finset.Ico 1 (n - r + 1),
       X.stasheffSummand n deg x r s
