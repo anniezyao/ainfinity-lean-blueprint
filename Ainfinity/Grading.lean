@@ -8,9 +8,8 @@ namespace AInfinityCategoryTheory
 abbrev Parity := ZMod 2
 
 class Grading (β : Type u) extends AddCommGroup β where
-  ofInt: ℤ → β
-  sign : β → Parity
-  ofInt_add : ∀ a b : ℤ, ofInt (a + b) = ofInt a + ofInt b
+  ofInt: ℤ →+ β
+  sign : β →+ Parity
   sign_ofInt: ∀ n : ℤ, sign (ofInt n) = (n : Parity)
 
 

@@ -96,7 +96,7 @@ lemma shift_ofInt_combine {n s : ℕ} (hsn : s ≤ n) :
       rw [Int.add_sub_assoc (2 - (s : ℤ))]
     unfold shift_ofInt
     symm
-    exact (Grading.ofInt_add (β := β) (2 - ↑s) (2 - ↑(n + 1 - s)))
+    apply map_add
 
 --looks good. the statement is correct. proof we dont care
 lemma stasheffDegOut_sum_core
