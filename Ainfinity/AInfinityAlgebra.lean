@@ -1,5 +1,9 @@
-import Mathlib
-import Ainfinity.Grading
+module
+
+public import Mathlib
+public import AInfinity.Grading
+
+@[expose] public section
 
 open CategoryTheory Finset AInfinityCategoryTheory
 
@@ -9,6 +13,7 @@ namespace AInfinityAlgebraTheory
 
 universe u v
 variable {β : Type v} [Grading β]
+variable {n : ℕ}
 
 abbrev GradedRModule (R : Type u) [CommRing R] :=
   GradedObject β (ModuleCat.{u} R)
@@ -95,42 +100,101 @@ lemma stasheffDegOut_sum_core
     (hr : r + s ≤ n) :
     (∑ i : Fin (n + 1 - s), stasheffDegOut deg r s hr i) =
     (∑ i : Fin n, deg i) + shift_ofInt (2 - (s : ℤ)) := by
-  unfold stasheffDegOut;
-  rw [ show ( Finset.univ : Finset ( Fin ( n + 1 - s ) ) ) = Finset.univ.filter ( fun i : Fin ( n + 1 - s ) => i.val < r ) ∪ Finset.univ.filter ( fun i : Fin ( n + 1 - s ) => i.val = r ) ∪ Finset.univ.filter ( fun i : Fin ( n + 1 - s ) => i.val > r ) from ?_, Finset.sum_union, Finset.sum_union ];
-  · rw [ show ( Finset.univ.filter fun i : Fin ( n + 1 - s ) => ( i : ℕ ) < r ) = Finset.image ( fun i : Fin r => ⟨ i, by omega ⟩ ) Finset.univ from ?_, show ( Finset.univ.filter fun i : Fin ( n + 1 - s ) => ( i : ℕ ) = r ) = { ⟨ r, by omega ⟩ } from ?_, show ( Finset.univ.filter fun i : Fin ( n + 1 - s ) => ( i : ℕ ) > r ) = Finset.image ( fun i : Fin ( n - r - s ) => ⟨ r + 1 + i, by omega ⟩ ) Finset.univ from ?_ ];
-    · rw [ Finset.sum_image, Finset.sum_image ] <;> norm_num;
-      · rw [ show ( Finset.univ : Finset ( Fin n ) ) = Finset.image ( fun i : Fin r => ⟨ i, by linarith [ Fin.is_lt i ] ⟩ ) Finset.univ ∪ Finset.image ( fun i : Fin s => ⟨ r + i, by linarith [ Fin.is_lt i ] ⟩ ) Finset.univ ∪ Finset.image ( fun i : Fin ( n - r - s ) => ⟨ r + s + i, by omega ⟩ ) Finset.univ from ?_, Finset.sum_union, Finset.sum_union ];
-        · rw [ Finset.sum_image, Finset.sum_image, Finset.sum_image ] <;> norm_num;
-          · unfold stasheffInnerDeg;
-            unfold stasheffDegIn; ring_nf;
-            grind;
-          · exact fun i j h => by simpa [ Fin.ext_iff ] using h;
-          · exact fun i j h => by simpa [ Fin.ext_iff ] using h;
-          · exact fun i j h => by simpa [ Fin.ext_iff ] using h;
-        · norm_num [ Finset.disjoint_left ];
-          grind;
-        · norm_num [ Finset.disjoint_right ];
-          grind;
-        · ext ⟨ i, hi ⟩ ; simp +decide [ Finset.mem_union, Finset.mem_image ];
-          by_cases hi' : i < r;
-          · exact Or.inl ⟨ ⟨ i, by linarith ⟩, rfl ⟩;
-          · by_cases hi'' : i < r + s;
-            · exact Or.inr <| Or.inl ⟨ ⟨ i - r, by omega ⟩, by simp +decide [ Nat.add_sub_of_le ( le_of_not_gt hi' ) ] ⟩;
-            · exact Or.inr <| Or.inr <| ⟨ ⟨ i - ( r + s ), by omega ⟩, by norm_num; omega ⟩;
-      · exact fun i j h => by simpa [ Fin.ext_iff ] using h;
-      · exact fun i j h => by simpa [ Fin.ext_iff ] using h;
+  unfold stasheffDegOut
+  rw [
+    show (Finset.univ : Finset (Fin (n + 1 - s))) =
+        Finset.univ.filter (fun i : Fin (n + 1 - s) => i.val < r) ∪
+          Finset.univ.filter (fun i : Fin (n + 1 - s) => i.val = r) ∪
+          Finset.univ.filter (fun i : Fin (n + 1 - s) => i.val > r) from ?_,
+    Finset.sum_union,
+    Finset.sum_union
+  ]
+  · rw [
+      show Finset.univ.filter (fun i : Fin (n + 1 - s) => (i : ℕ) < r) =
+          Finset.image (fun i : Fin r => ⟨i, by omega⟩) Finset.univ from ?_,
+      show Finset.univ.filter (fun i : Fin (n + 1 - s) => (i : ℕ) = r) =
+          {⟨r, by omega⟩} from ?_,
+      show Finset.univ.filter (fun i : Fin (n + 1 - s) => (i : ℕ) > r) =
+          Finset.image
+            (fun i : Fin (n - r - s) => ⟨r + 1 + i, by omega⟩)
+            Finset.univ from ?_
+    ]
+    · rw [Finset.sum_image, Finset.sum_image] <;> norm_num
+      · rw [
+          show (Finset.univ : Finset (Fin n)) =
+              Finset.image
+                  (fun i : Fin r => ⟨i, by linarith [Fin.is_lt i]⟩)
+                  Finset.univ ∪
+                Finset.image
+                  (fun i : Fin s => ⟨r + i, by linarith [Fin.is_lt i]⟩)
+                  Finset.univ ∪
+                Finset.image
+                  (fun i : Fin (n - r - s) => ⟨r + s + i, by omega⟩)
+                  Finset.univ from ?_,
+          Finset.sum_union,
+          Finset.sum_union
+        ]
+        · rw [Finset.sum_image, Finset.sum_image, Finset.sum_image] <;> norm_num
+          · unfold stasheffInnerDeg
+            unfold stasheffDegIn
+            ring_nf
+            grind
+          · exact fun i j h => by simpa [Fin.ext_iff] using h
+          · exact fun i j h => by simpa [Fin.ext_iff] using h
+          · exact fun i j h => by simpa [Fin.ext_iff] using h
+        · norm_num [Finset.disjoint_left]
+          grind
+        · norm_num [Finset.disjoint_right]
+          grind
+        · ext ⟨i, hi⟩
+          simp only
+            [mem_univ, union_assoc, mem_union, mem_image, Fin.mk.injEq, true_and,
+              true_iff]
+          by_cases hi' : i < r
+          · exact Or.inl ⟨⟨i, by linarith⟩, rfl⟩
+          · by_cases hi'' : i < r + s
+            · exact Or.inr <| Or.inl <|
+                ⟨⟨i - r, by omega⟩, by
+                  simp +decide [Nat.add_sub_of_le (le_of_not_gt hi')]
+                ⟩
+            · exact Or.inr <| Or.inr <| ⟨⟨i - (r + s), by omega⟩, by
+                norm_num
+                omega
+              ⟩
+      · exact fun i j h => by simpa [Fin.ext_iff] using h
+      · exact fun i j h => by simpa [Fin.ext_iff] using h
     · -- To prove equality of finite sets, we show each set is a subset of the other.
       apply Finset.ext
       intro i
-      simp [Finset.mem_image];
-      exact ⟨ fun hi => ⟨ ⟨ i - ( r + 1 ), by omega ⟩, by erw [ Fin.ext_iff ] ; norm_num; omega ⟩, by rintro ⟨ a, rfl ⟩ ; exact Nat.lt_of_lt_of_le ( by simp +arith +decide ) ( Nat.le_add_right _ _ ) ⟩;
-    · ext ⟨ i, hi ⟩ ; aesop;
-    · ext ⟨i, hi⟩; simp [Finset.mem_image];
-      exact ⟨ fun hi' => ⟨ ⟨ i, by omega ⟩, rfl ⟩, fun ⟨ a, ha ⟩ => by linarith [ Fin.is_lt a ] ⟩;
-  · exact Finset.disjoint_filter.mpr fun _ _ _ _ => by linarith;
-  · simp +contextual [ Finset.disjoint_left ];
-    exact fun a ha => ha.elim ( fun ha => le_of_lt ha ) fun ha => ha.le;
-  · ext i; cases lt_trichotomy i.val r <;> aesop;
+      simp only [gt_iff_lt, mem_filter, mem_univ, true_and, mem_image]
+      exact
+        ⟨
+          (fun hi => ⟨⟨i - (r + 1), by omega⟩, by
+            erw [Fin.ext_iff]
+            norm_num
+            omega
+          ⟩),
+          by
+            rintro ⟨a, rfl⟩
+            exact
+              Nat.lt_of_lt_of_le
+                (by simp +arith +decide)
+                (Nat.le_add_right _ _)
+        ⟩
+    · ext ⟨i, hi⟩
+      aesop
+    · ext ⟨i, hi⟩
+      simp only [mem_filter, mem_univ, true_and, mem_image, Fin.mk.injEq]
+      exact
+        ⟨
+          (fun hi' => ⟨⟨i, by omega⟩, rfl⟩),
+          fun ⟨a, ha⟩ => by linarith [Fin.is_lt a]
+        ⟩
+  · exact Finset.disjoint_filter.mpr fun _ _ _ _ => by linarith
+  · simp +contextual [Finset.disjoint_left]
+    exact fun a ha => ha.elim (fun ha => le_of_lt ha) fun ha => ha.le
+  · ext i
+    cases lt_trichotomy i.val r <;> aesop
 
 
 /-- The outer operation has the Stasheff target degree. -/
@@ -201,9 +265,9 @@ def stasheffSignParity
     (hr : r + s ≤ n) : Parity :=
   (∑ i : Fin (n - r - s), Grading.sign (deg ⟨r + s + i.val, by omega⟩)) -
     ((n - r - s : ℕ) : Parity)
+
 /-- The sign `(-1)^(|a_{r+s+1}| + ⋯ + |a_n| - t)` as an integer,
     defaulting to `1` for invalid indices. -/
-
 def stasheffSign
     (deg : Fin n → β)
     (r s : ℕ) : ℤ :=
@@ -238,7 +302,6 @@ lemma stasheffSummand_eq_term
   (h : validStasheffIndices n r s) :
   X.stasheffSummand n deg x r s
     = X.stasheffTerm n deg x r s h.1 h.2 := by
-
   unfold stasheffSummand; aesop
 
 
@@ -261,14 +324,16 @@ lemma stasheffTerm_zero_of_inner_zero
     (hm : X.m s (stasheffDegIn deg r s hr) = 0) :
     X.stasheffTerm n deg x r s hs hr = 0 := by
   -- Since the inner multilinear map is zero, the entire inner value is zero.
-  have h_inner_zero : X.m s (stasheffDegIn deg r s hr) (fun i => x ⟨r + i.val, by omega⟩) = 0 := by
-    aesop;
-  simp +decide [ h_inner_zero, AInfinityAlgData.stasheffTerm ];
-  have h_xOut_zero : ∀ (f : ∀ i : Fin (n + 1 - s), A (stasheffDegOut deg r s hr i)), f ⟨r, by omega⟩ = 0 → X.m (n + 1 - s) (stasheffDegOut deg r s hr) f = 0 := by
+  have h_inner_zero :
+      X.m s (stasheffDegIn deg r s hr) (fun i => x ⟨r + i.val, by omega⟩) = 0 := by
+    aesop
+  simp +decide [h_inner_zero, AInfinityAlgData.stasheffTerm]
+  have h_xOut_zero :
+      ∀ (f : ∀ i : Fin (n + 1 - s), A (stasheffDegOut deg r s hr i)),
+        f ⟨r, by omega⟩ = 0 →
+          X.m (n + 1 - s) (stasheffDegOut deg r s hr) f = 0 := by
     intro f hf_zero
-    have h_xOut_zero : X.m (n + 1 - s) (stasheffDegOut deg r s hr) f = 0 := by
-      convert MultilinearMap.map_coord_zero _ _ hf_zero
-    exact h_xOut_zero;
+    convert MultilinearMap.map_coord_zero _ _ hf_zero
   grind +locals
 lemma stasheffTerm_zero_of_outer_zero
     (X : AInfinityAlgData (β := β) R A)
@@ -276,20 +341,38 @@ lemma stasheffTerm_zero_of_outer_zero
     (r s : ℕ) (hs : 1 ≤ s) (hr : r + s ≤ n)
     (hm : X.m (n + 1 - s) (stasheffDegOut deg r s hr) = 0) :
     X.stasheffTerm n deg x r s hs hr = 0 := by
-  unfold AInfinityAlgData.stasheffTerm;
+  unfold AInfinityAlgData.stasheffTerm
   -- Since the outer multilinear map is zero, applying it to any input gives zero.
-  have h_outer_zero_apply : ∀ xOut : ∀ i : Fin (n + 1 - s), A (stasheffDegOut deg r s hr i), X.m (n + 1 - s) (stasheffDegOut deg r s hr) xOut = 0 := by
-    aesop;
+  have h_outer_zero_apply :
+      ∀ xOut : ∀ i : Fin (n + 1 - s), A (stasheffDegOut deg r s hr i),
+        X.m (n + 1 - s) (stasheffDegOut deg r s hr) xOut = 0 := by
+    aesop
   grind
 lemma stasheffSummand_zero_of_inner_or_outer_zero
     (X : AInfinityAlgData (β := β) R A)
     (n : ℕ) (deg : Fin n → β) (x : ∀ i, A (deg i))
     (r s : ℕ)
-    (h : ∀ (hs : 1 ≤ s) (hr : r + s ≤ n),
+    (h : ∀ (_hs : 1 ≤ s) (hr : r + s ≤ n),
           X.m s (stasheffDegIn deg r s hr) = 0 ∨
           X.m (n + 1 - s) (stasheffDegOut deg r s hr) = 0) :
     X.stasheffSummand n deg x r s = 0 := by
-  grind +suggestions
+  by_cases hrs : validStasheffIndices n r s
+  · rw [
+      stasheffSummand_eq_term
+        (X := X) (n := n) (deg := deg) (x := x) (r := r) (s := s) hrs
+    ]
+    rcases h hrs.1 hrs.2 with h_inner | h_outer
+    · exact
+        stasheffTerm_zero_of_inner_zero
+          (X := X) (n := n) (deg := deg) (x := x)
+          (r := r) (s := s) hrs.1 hrs.2 h_inner
+    · exact
+        stasheffTerm_zero_of_outer_zero
+          (X := X) (n := n) (deg := deg) (x := x)
+          (r := r) (s := s) hrs.1 hrs.2 h_outer
+  · exact
+      stasheffSummand_eq_zero
+        (X := X) (n := n) (deg := deg) (x := x) (r := r) (s := s) hrs
 
 end AInfinityAlgData
 
